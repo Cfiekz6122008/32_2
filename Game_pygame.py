@@ -1,66 +1,41 @@
 import pygame
 import random
 import sys
+from all_colors import colors
 
 # Инициализация Pygame
 pygame.init()
 
-# Параметры экрана
-infoObject = pygame.display.Info()
-SCREEN_WIDTH, SCREEN_HEIGHT = infoObject.current_w, infoObject.current_h
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.NOFRAME)  # Полноэкранный режим
+# Параметры окна
+WIDTH, HEIGHT = 1280, 720
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Color Changing Rectangles")
+screen.fill((255, 255, 255))  # Заполнение фона белым цветом
 
-# Список цветов
-colors = [
-    (255, 0, 0),  # Красный
-    (0, 255, 0),  # Зеленый
-    (0, 0, 255),  # Синий
-    (255, 255, 0),  # Желтый
-    (255, 165, 0),  # Оранжевый
-    (128, 0, 128),  # Пурпурный
-    (0, 255, 255)  # Голубой
-]
-
-# Загрузка фоновой музыки
-pygame.mixer.music.load("background_music.mp3")
-pygame.mixer.music.play(-1)  # Повторять бесконечно
-
-
-# Функция генерации кругов
-def generate_circles():
-    circles = []
-    for _ in range(10):
-        radius = random.randint(10, 100)
-        x = random.randint(radius, SCREEN_WIDTH - radius)
-        y = random.randint(radius, SCREEN_HEIGHT - radius)
-        color = random.choice(colors)
-        circles.append((x, y, radius, color))
-    return circles
-
+# Параметры прямоугольников
+rect_size = 200
+x, y = (WIDTH - rect_size) // 2, (HEIGHT - rect_size) // 2  # Начальные координаты
+fps = 60
+clock = pygame.time.Clock()
 
 # Основной игровой цикл
-clock = pygame.time.Clock()
 while True:
-    # Генерация фона
-    background_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    screen.fill(background_color)
-
-    # Проверка событий
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
+            sys.exit()  # Завершение работы игры
 
-    # Генерация кругов каждые 200-800 миллисекунд
-    circles = generate_circles()
+    screen.fill((255, 255, 255))  # Сброс фона
 
-    for circle in circles:
-        pygame.draw.circle(screen, circle[3], (circle[0], circle[1]), circle[2])
+    # Рисование вложенных прямоугольников
+    size = rect_size
+    for i in range(10):  # Рисуем 10 вложенных прямоугольников
+        color = random.choice(colors)  # Случайный цвет
+        pygame.draw.rect(screen, color, (x + i * 10, y + i * 10, size, size), 0)  # Вложенные прямоугольники
+        size -= 10  # Уменьшение размера
 
-    pygame.display.flip()
+    pygame.display.flip()  # Обновление экрана
+    clock.tick(fps)  # Установка кадров в секунду
 
-    # Ограничение скорости игры
-    clock.tick(1)  # Обновление экрана 1 раз в секунду (интервал генерации кругов)
-    pygame.time.delay(random.randint(200, 800))  # Задержка между генерациями кругов
 
 
